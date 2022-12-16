@@ -6,8 +6,9 @@ export const errorResponse = (statusCode, errMsg) => ({
 });
 
 export const errorHandler = (err, req, res, next) => {
-  res.status(res.statusCode || 500);
-  res.json(errorResponse(res.statusCode, err.message));
+  const statusCode = res.statusCode ? res.statusCode : 500;
+  res.status(statusCode);
+  res.json(errorResponse(statusCode, err.message));
 };
 
 //200 OK
