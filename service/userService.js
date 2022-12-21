@@ -1,17 +1,21 @@
 import bcrypt from "bcrypt";
+import asyncHandler from "express-async-handler";
 import UserModel from "../model/user.js";
 
-export const registerUserService = async (user) => {
-  const hashPassword = await bcrypt.hash(
-    user.password,
-    process.env.PASSWORD_SALT
-  );
-  user.password = hashPassword;
-  const savedUser = await UserModel.create(user);
-  return savedUser;
-};
+export const registerUserService = asyncHandler(async (user) => {
+  const { name, username, password } = user;
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(password, salt);
 
-export const loginUserService = async (username, password) => {
+  const savedUser = await UserModel.create({
+    name,
+    username,
+    password: hashPassword,
+  });
+  return savedUser;
+});
+
+export const loginUserService = asyncHandler(async (username, password) => {
   const user = await UserModel.findOne({ username });
   if (user) {
     const match = await bcrypt.compare(password, user.password);
@@ -21,12 +25,14 @@ export const loginUserService = async (username, password) => {
   }
 
   return undefined;
-};
+});
 
-export const getUserProfileService = async (username) => {
-  return await UserModel.findOne({ username });
-};
+export const getUserProfileService = asyncHandler(async (username) => {
+  const user = await UserModel.findOne({ username });
+  return user;
+});
 
-export const getAllUsersProfileService = async () => {
-  return await UserModel.find();
-};
+export const getAllUsersProfileService = asyncHandler(async () => {
+  const users = await UserModel.find();
+  return users;
+});
