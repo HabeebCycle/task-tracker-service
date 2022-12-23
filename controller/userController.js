@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import { generateToken } from "../middleware/authService.js";
 import {
   registerUserService,
   loginUserService,
@@ -20,6 +21,11 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 
   const savedUser = await registerUserService(req.body);
+  const token = await generateToken({
+    id: savedUser.id,
+    username: savedUser.username,
+    role: savedUser.role,
+  });
   return res.status(200).json({
     id: savedUser.id,
     name: savedUser.name,
@@ -27,6 +33,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     username: savedUser.username,
     createdAt: savedUser.createdAt,
     updatedAt: savedUser.updatedAt,
+    token,
   });
 });
 
@@ -43,6 +50,12 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new Error(`Unauthorized: Invalid username or password`);
   }
 
+  const token = await generateToken({
+    id: user.id,
+    username: user.username,
+    role: user.role,
+  });
+
   return res.status(200).json({
     id: user.id,
     name: user.name,
@@ -50,5 +63,47 @@ export const loginUser = asyncHandler(async (req, res) => {
     username: user.username,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    token,
   });
+});
+
+export const getProfile = asyncHandler(async (req, res) => {
+  const payload = req.payload;
+  if (payload) {
+    const username = payload.username;
+    const user = await getUserProfileService(username);
+
+    if (user) {
+      return res.status(200).json({
+        name: user.name,
+        role: user.role,
+        username: user.username,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      });
+    }
+  }
+
+  res.status(401);
+  throw new Error("User is unauthrized or authenticated");
+});
+
+export const getAllProfiles = asyncHandler(async (req, res) => {
+  const payload = req.payload;
+  if (payload) {
+    const username = payload.username;
+    const user = await getUserProfileService(username);
+
+    if (user && user.role === "admin") {
+      const allUsers = await getAllUsersProfileService();
+
+      return res.status(200).json(allUsers);
+    } else {
+      res.status(403);
+      throw new Error("User is forbidden to access this resource.");
+    }
+  }
+
+  res.status(401);
+  throw new Error("User is unauthrized or authenticated.");
 });
