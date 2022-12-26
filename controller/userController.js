@@ -74,13 +74,7 @@ export const getProfile = asyncHandler(async (req, res) => {
     const user = await getUserProfileService(username);
 
     if (user) {
-      return res.status(200).json({
-        name: user.name,
-        role: user.role,
-        username: user.username,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      });
+      return res.status(200).json(generatePayload(user));
     }
   }
 
@@ -97,7 +91,9 @@ export const getAllProfiles = asyncHandler(async (req, res) => {
     if (user && user.role === "admin") {
       const allUsers = await getAllUsersProfileService();
 
-      return res.status(200).json(allUsers);
+      return res
+        .status(200)
+        .json(allUsers.map((user) => generatePayload(user)));
     } else {
       res.status(403);
       throw new Error("User is forbidden to access this resource.");
@@ -105,5 +101,13 @@ export const getAllProfiles = asyncHandler(async (req, res) => {
   }
 
   res.status(401);
-  throw new Error("User is unauthrized or authenticated.");
+  throw new Error("User is unauthorized or authenticated.");
+});
+
+const generatePayload = (user) => ({
+  name: user.name,
+  role: user.role,
+  username: user.username,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
 });
