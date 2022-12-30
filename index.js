@@ -4,6 +4,7 @@ import dbConfig from "./config/db.js";
 import studentRoute from "./router/studentRoute.js";
 import { errorHandler } from "./errors/errorTypes.js";
 import userRoute from "./router/userRoute.js";
+import taskRoute from "./router/taskRoute.js";
 
 dotenv.config();
 dbConfig();
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5500;
 
 app.use("/students", studentRoute);
 app.use("/users", userRoute);
+app.use("/tasks", taskRoute);
 
 app.use((req, res) => {
   res.status(404);
