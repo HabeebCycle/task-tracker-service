@@ -22,7 +22,7 @@ export const getUserTasks = async (owner) => {
 };
 
 export const getTask = async (id, owner) => {
-  const task = await TaskModel.find({ id, owner });
+  const task = await TaskModel.find({ _id: id, owner });
   return task;
 };
 
