@@ -118,6 +118,67 @@ export const updateUserTaskById = asyncHandler(async (req, res) => {
   throw new Error("User is unauthorized or authenticated");
 });
 
+export const updateTaskReminderById = asyncHandler(async (req, res) => {
+  const {
+    payload,
+    params: { id },
+    body: { reminder },
+  } = req;
+
+  if (payload && payload.id) {
+    if (id) {
+      const task = await service.getTask(id, payload.id);
+      if (task && task.length > 0) {
+        const { id: taskId, reminder: taskReminder, text, day } = task[0];
+        const updatedTask = await service.updateTask({
+          id: taskId,
+          text,
+          day,
+          reminder: reminder ? reminder : taskReminder,
+        });
+
+        return res.status(200).json(taskResponse(updatedTask));
+      } else {
+        res.status(404);
+        throw new Error(`Task with id ${id} not found`);
+      }
+    } else {
+      res.status(400);
+      throw new Error("Task id parameter is missing.");
+    }
+  }
+
+  res.status(401);
+  throw new Error("User is unauthorized or authenticated");
+});
+
+export const deleteUserTaskById = asyncHandler(async (req, res) => {
+  const {
+    payload,
+    params: { id },
+  } = req;
+
+  if (payload && payload.id) {
+    if (id) {
+      const task = await service.getTask(id, payload.id);
+      if (task && task.length > 0) {
+        await service.deleteTask(id);
+
+        return res.status(200).json({ status: "Deleted successfully" });
+      } else {
+        res.status(404);
+        throw new Error(`Task with id ${id} not found`);
+      }
+    } else {
+      res.status(400);
+      throw new Error("Task id parameter is missing.");
+    }
+  }
+
+  res.status(401);
+  throw new Error("User is unauthorized or authenticated");
+});
+
 const taskResponse = (task) => ({
   id: task.id,
   text: task.text,

@@ -9,6 +9,8 @@ taskRoute
   .get("/", authenticate, controller.getUserTasks)
   .get("/all", authenticate, controller.getAdminTasks)
   .get("/:id", authenticate, controller.getUserTaskById)
-  .put("/:id", authenticate, controller.updateUserTaskById);
+  .put("/:id", authenticate, controller.updateUserTaskById)
+  .delete("/:id", authenticate, controller.deleteUserTaskById)
+  .patch("/:id", authenticate, controller.updateTaskReminderById);
 
 export default taskRoute;
