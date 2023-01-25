@@ -26,14 +26,10 @@ export const registerUser = asyncHandler(async (req, res) => {
     username: savedUser.username,
     role: savedUser.role,
   });
+
   return res.status(200).json({
-    id: savedUser.id,
-    name: savedUser.name,
-    role: savedUser.role,
-    username: savedUser.username,
-    createdAt: savedUser.createdAt,
-    updatedAt: savedUser.updatedAt,
-    token,
+    token: token,
+    type: "Bearer",
   });
 });
 
@@ -57,13 +53,8 @@ export const loginUser = asyncHandler(async (req, res) => {
   });
 
   return res.status(200).json({
-    id: user.id,
-    name: user.name,
-    role: user.role,
-    username: user.username,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-    token,
+    token: token,
+    type: "Bearer",
   });
 });
 
