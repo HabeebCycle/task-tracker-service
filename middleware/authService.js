@@ -15,7 +15,7 @@ export const decodeToken = async (token) => {
 
 export const authenticate = async (req, res, next) => {
   const bearerToken = req.headers.authorization;
-  // ["Bearer", "eyndmfdnfdmn"]
+  // ["Bearer eyndmfdnfdmn"]
   if (bearerToken && bearerToken.startsWith("Bearer ")) {
     const token = bearerToken.split(" ")[1];
     try {

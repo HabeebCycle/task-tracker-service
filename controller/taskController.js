@@ -130,11 +130,13 @@ export const updateTaskReminderById = asyncHandler(async (req, res) => {
       const task = await service.getTask(id, payload.id);
       if (task && task.length > 0) {
         const { id: taskId, reminder: taskReminder, text, day } = task[0];
+        const reminderTask = reminder != undefined ? reminder : taskReminder;
+
         const updatedTask = await service.updateTask({
           id: taskId,
           text,
           day,
-          reminder: reminder ? reminder : taskReminder,
+          reminder: reminderTask,
         });
 
         return res.status(200).json(taskResponse(updatedTask));
